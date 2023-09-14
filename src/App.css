@@ -1,8 +1,21 @@
-#root {
-  max-width: 1280px;
-  margin: 0 auto;
-  padding: 2rem;
-  text-align: center;
+* {
+  box-sizing: border-box;
+}
+
+#root,.theme {
+  width: 100%;
+  height: 100%;
+}
+.theme {
+  background-color: var(--color-bg-default);
+}
+
+.main {
+  height: calc(100% - 60px);
+  background-image: url(./assets/wood.jpg);
+  background-size: cover;
+  justify-content: center;
+  padding: 12px;
 }
 
 .logo {
