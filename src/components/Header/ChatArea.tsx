@@ -4,11 +4,11 @@ import { TextField } from '@consta/uikit/TextField';
 import { IconSendMessage } from '@consta/icons/IconSendMessage';
 import { Button } from '@consta/uikit/Button';
 import bot from '../../assets/bot.jpg'
-import { SetStateAction, useState } from 'react';
+import { useState } from 'react';
 
 function ChatArea() {
-  const [value, setValue] = useState<SetStateAction<string>>('')
-  const handleChange = ({ value }: { value: string }) => setValue(value);
+  const [value, setValue] = useState<string | null>('')
+  const handleChange = ({ value }: { value: string | null }) => setValue(value);
 
   return (
     <div className='chat-area'>
