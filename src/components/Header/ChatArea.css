@@ -1,5 +1,5 @@
 .chat-area {
-    max-width: 1000px;
+    max-width: 90%;
     width: 100%;
     max-height: 100%;
     background-color: var(--color-bg-stripe);
@@ -10,7 +10,15 @@
     flex-direction: column;
     resize: both;
     min-width: 280px;
-    min-height: 280;
+    min-height: 280px;
+    position: relative;
+}
+
+.chat-area::after {
+    content: "resize";
+    position: absolute;
+    bottom: -5px;
+    right: 10px;
 }
 
 .chat-area__header {
@@ -36,21 +44,27 @@
     box-sizing: border-box;
     padding: 0 12px;
     background-color: var(--color-bg-secondary);
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
 }
 
 .message {
     width: fit-content;
-    padding: 4px 6px;
+    max-width: 500px;
+    min-width: 120px;
+    padding: 4px 6px 15px;
     border-radius: 10px;
-    margin: 4px 0 4px;
     position: relative;
+    margin-top: 4px;
 }
 
 .message__time {
     position: absolute;
-    bottom: -18px;
-    right: 5px;
+    bottom: -3px;
+    right: 4px;
     font-size: 10px;
+    font-weight: 200;
     color: var(--color-typo-primary);
 }
 
