@@ -14,13 +14,6 @@
     position: relative;
 }
 
-.chat-area::after {
-    content: "resize";
-    position: absolute;
-    bottom: -5px;
-    right: 10px;
-}
-
 .chat-area__header {
     width: 100%;
     background-color: var(--color-bg-stripe);
@@ -28,7 +21,13 @@
     padding: 18px 12px;
     display: flex;
     align-items: center;
+    justify-content: space-between;
 }
+
+.heading-logo-wrapper {
+    display: flex; align-items: center;
+}
+
 
 .chat-avatar {
     margin-right: 6px;
@@ -51,7 +50,7 @@
 
 .message {
     width: fit-content;
-    max-width: 500px;
+    max-width: 70%;
     min-width: 120px;
     padding: 4px 6px 15px;
     border-radius: 10px;

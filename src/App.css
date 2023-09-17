@@ -12,7 +12,7 @@
 
 .main {
   height: calc(100% - 60px);
-  background-image: url(./assets/wood.jpg);
+  /* background-image: url(./assets/wood.jpg); */
   background-size: cover;
   justify-content: center;
   padding: 12px;

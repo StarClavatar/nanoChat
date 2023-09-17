@@ -1,51 +1,106 @@
 import "./ChatArea.css";
 import { Text } from "@consta/uikit/Text";
-import { TextField } from "@consta/uikit/TextField";
+import { TextField, TextFieldOnChangeArguments } from "@consta/uikit/TextField";
 import { IconSendMessage } from "@consta/icons/IconSendMessage";
 import { Button } from "@consta/uikit/Button";
 import bot from "../../assets/bot.jpg";
-import { useEffect, useState } from "react";
-import { messages, Messages } from "../../sampleData/messages";
+import { useState, useRef, useEffect } from "react";
+import { Messages } from "../../sampleData/messages";
+import { chatRequest } from "../../api/chatApi";
+import Parser from 'react-html-parser';
 
-function ChatArea() {
-  const [value, setValue] = useState<string>("");
-  const [chat, setChat] = useState<Messages>(messages);
-  const handleChange = ({ value }: { value: string }) => setValue(value);
-  const handleClick = () => {
-    setChat([
-      ...chat,
-      {
-        type: "my-message",
-        text: value,
-        date: Date().toLocaleString(),
-      },
-    ]);
-    setValue("");
-  };
+interface Props {
+  onResetChat: () => void
+}
 
-  function handleKeyDown(e: { key: string; }): void {
-    if (e.key === "Enter" && value.length > 0) {
-      handleClick()
-    }
-  }
+export function ChatArea({ onResetChat }: Props) {
+  const [value, setValue] = useState<string | null>("");
+  const [chat, setChat] = useState<Messages>([]);
+  const [sending, setSending] = useState<boolean>(false);
+  const messagesEndRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
+    const chatHistory = localStorage.getItem("chatHistory")
+    chatHistory && setChat(JSON.parse(chatHistory))
+  }, [])
   
-  })
+  useEffect(() => {
+    scrollToBottom()
+  }, [chat]);
+
+  const handleChange = (args: TextFieldOnChangeArguments) => setValue(args.value);
+
+  const handleClick = () => sendMessage();
+
+  const handleKeyDown = (e: { key: string }): void => {
+    if (e.key === "Enter") sendMessage();
+  };
+
+
+  const scrollToBottom = () => {
+    messagesEndRef.current?.scroll({ top: messagesEndRef.current.scrollHeight, behavior: 'smooth' });
+  }
+
+  function saveMessages(chat: Messages) {
+    localStorage.setItem("chatHistory", JSON.stringify(chat))
+  }
+
+  function sendMessage() {
+    if (sending===true || value === null || value.trim() === "") return;
+    setSending(true)
+    setChat((chat) => {
+      const newChat = [
+        ...chat,
+        {
+          type: "my-message",
+          text: value,
+          date: Date().toLocaleString(),
+        },
+      ]
+      saveMessages(newChat)
+      return newChat
+    });
+    
+    chatRequest(value)
+    .then((res) => {
+      setValue("");
+      setChat((chat) => {
+        const newChat = [
+          ...chat,
+          {
+            type: "bot-message",
+            text: res,
+            date: Date().toLocaleString(),
+          },
+        ]
+        saveMessages(newChat)
+        return newChat
+      })
+      setSending(false)
+    })
+    .catch(err => {
+      console.log(err)
+      setSending(false)
+    }
+    )
+  }
 
   return (
     <div className="chat-area">
       <div className="chat-area__header">
-        <img src={bot} alt="аватар" className="chat-avatar" />
-        <Text>бот-хуеплёт</Text>
+        <div className="heading-logo-wrapper">
+          <img src={bot} alt="аватар" className="chat-avatar" />
+          <Text className="chat-area__name">чат-бот</Text>
+        </div>
+        <Button size="s" onClick={onResetChat} view="secondary" label={"Перезагрузить"}/>
       </div>
-      <div className="chat-area-messages">
-        {chat.map((msg) => (
-          <Text className={`message ${msg.type}`} size="s">
+      <div className="chat-area-messages" ref={messagesEndRef}>
+        {chat.map((msg, idx) => (
+          <Text key={idx} className={`message ${msg.type}`} size="s" as="p">
             <span className="message__time message__time">
               {new Date(msg.date).toLocaleString("ru-RU")}
             </span>
-            {msg.text}
+            {Parser(msg.text)}
           </Text>
         ))}
       </div>
@@ -63,11 +118,13 @@ function ChatArea() {
         <Button
           iconRight={IconSendMessage}
           onClick={handleClick}
-          view="clear"
+          view="primary"
+          disabled={sending || value?.trim() === ''}
+          loading={sending}
         />
       </div>
     </div>
   );
 }
 
-export default ChatArea;
+
