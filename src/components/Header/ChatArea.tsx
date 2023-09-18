@@ -5,7 +5,7 @@ import { IconSendMessage } from "@consta/icons/IconSendMessage";
 import { Button } from "@consta/uikit/Button";
 import bot from "../../assets/bot.jpg";
 import { useState, useRef, useEffect } from "react";
-import { Messages } from "../../sampleData/messages";
+import { Messages, messages } from "../../sampleData/messages";
 import { chatRequest } from "../../api/chatApi";
 import Parser from 'react-html-parser';
 
@@ -21,7 +21,12 @@ export function ChatArea({ onResetChat }: Props) {
 
   useEffect(() => {
     const chatHistory = localStorage.getItem("chatHistory")
-    chatHistory && setChat(JSON.parse(chatHistory))
+    if (chatHistory) {
+      setChat(JSON.parse(chatHistory));
+  } else {
+      setChat(messages);
+      saveMessages(messages);
+  }
   }, [])
   
   useEffect(() => {
